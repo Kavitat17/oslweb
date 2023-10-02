@@ -5,6 +5,7 @@ import Login from "./Login";
 import AdminPanel from "./AdminPanel";
 import ForgotPassword from "./ForgotPassword";
 import UserProfile from "./UserProfile";
+import EmailVerify from './EmailVerify';
 
 function App() {
   return(
@@ -16,6 +17,7 @@ function App() {
         <Route path='/register' element={<Register />} />
         <Route path='/AdminPanel/*' element={<AdminPanel />} />
         <Route path='/AdminPanel/user-profile' element={<UserProfile />} />
+        <Route path='/verify/:token' element={<EmailVerify />} />
       </Routes>
     </BrowserRouter>
   );

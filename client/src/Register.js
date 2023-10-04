@@ -9,7 +9,6 @@ const Register = () => {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [password, setPassword] = useState('');
-  const [answer, setAnswer] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -26,7 +25,7 @@ const Register = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (!name || !email || !phone || !address || !password || !answer) {
+    if (!name || !email || !phone || !address || !password ) {
       setError('All fields are required');
       return;
     }
@@ -47,7 +46,6 @@ const Register = () => {
       phone,
       address,
       password,
-      answer,
     };
 
     
@@ -56,7 +54,12 @@ const Register = () => {
         if (response.data.success) {
           console.log("status code: ", response.status);
           setError('');
-          setSuccessMessage('Registration successful! You can now log in.');
+          setSuccessMessage('Registration successful! You can now check your email for verification.');
+          setName('');
+          setEmail('');
+          setPhone('');
+          setAddress('');
+          setPassword('');
         } else {
           console.log("status code: ", response.status);
           setError(response.data.message);
@@ -118,18 +121,6 @@ const Register = () => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <div>
-          <label>Question:</label>
-          <p>What is your birthplace?</p>
-        </div>
-        <div>
-          <label>Answer:</label>
-          <input
-            type="text"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
           />
         </div>
         <button type="submit">Sign Up</button>

@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-import './forgotPassword.css';
+import { useParams, useNavigate } from 'react-router-dom';
+import './resetPassword.css';
 
-const ForgotPassword = () => {
+
+const isValidEmail = (email) => {
+    return /\S+@\S+\.\S+/.test(email);
+};
+
+const ResetPassword = () => {
+  const { token } = useParams();
   const [email, setEmail] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -13,16 +20,23 @@ const ForgotPassword = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (!isValidEmail(email)) { 
+        setError('Please enter a valid email address.');
+        return;
+    }
+
     try {
-      const response = await axios.post('http://localhost:8080/api/v1/auth/forgot-password', {
+      const response = await axios.post(`http://localhost:8080/api/v1/auth/reset-password/${token}`, {
         email,
+        newPassword,
       });
 
       if (response.data.success) {
-        setSuccess('Password reset link has been sent to your email address.');
+        setSuccess('Password reset successfully');
         setError('');
+        navigate('/login');
       } else {
-        setError(response.data.message);
+        setError(response.data.error);
         setSuccess('');
       }
     } catch (error) {
@@ -36,15 +50,11 @@ const ForgotPassword = () => {
     }
   };
 
-  const handleReturnToLogin = () => {
-    navigate('/login'); // Navigate back to the login page
-  };
-
   return (
-    <div className="forgot-password-container">
-      <h2>Forgot Password</h2>
+    <div className="reset-password-container">
+      <h2>Reset Password</h2>
       <form onSubmit={handleSubmit}>
-        <div>
+      <div>
           <label>Email:</label>
           <input
             type="email"
@@ -52,15 +62,20 @@ const ForgotPassword = () => {
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
-        <button type="submit">Submit</button>
+        <div>
+          <label>New Password:</label>
+          <input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+        </div>
+        <button type="submit">Submit New Password</button>
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {success && <p style={{ color: 'green' }}>{success}</p>}
-      <p>
-        <span onClick={handleReturnToLogin}>Return to Login</span>
-      </p>
     </div>
   );
 };
 
-export default ForgotPassword;
+export default ResetPassword;

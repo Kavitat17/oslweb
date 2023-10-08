@@ -5,7 +5,7 @@ import './resetPassword.css';
 
 
 const isValidEmail = (email) => {
-    return /\S+@\S+\.\S+/.test(email);
+  return /\S+@\S+\.\S+/.test(email);
 };
 
 const ResetPassword = () => {
@@ -34,7 +34,8 @@ const ResetPassword = () => {
       if (response.data.success) {
         setSuccess('Password reset successfully');
         setError('');
-        navigate('/login');
+        setNewPassword('');
+        setEmail('');
       } else {
         setError(response.data.error);
         setSuccess('');
@@ -48,6 +49,10 @@ const ResetPassword = () => {
 
       console.error(error);
     }
+  };
+
+  const handleLoginClick = () =>{
+    navigate('/login');
   };
 
   return (
@@ -74,6 +79,9 @@ const ResetPassword = () => {
       </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {success && <p style={{ color: 'green' }}>{success}</p>}
+      {success && (
+        <button onClick={handleLoginClick}>Login</button>
+      )}
     </div>
   );
 };

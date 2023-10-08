@@ -195,8 +195,7 @@ export const resetPasswordController = async (req, res) =>{
       return res.status(400).send({ message: "Email and New password is required"})
     }
 
-    const user = await admin.findOne({email: req.user.email});
-
+    const user = await admin.findOne({ email });
     if(!user){
       return res.status(400).send({
         success: false,

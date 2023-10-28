@@ -56,6 +56,7 @@ export const registerController = async (req, res) => {
       address,
       password: hashedPassword,
       isVerfied: false, //set intial status to false
+      isApproved: false,
       verificationToken, //store varification token in user record
     }).save();
 
@@ -73,6 +74,47 @@ export const registerController = async (req, res) => {
     });
   }
 };
+
+// Super Admin Approval
+export const approveUserController = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    // Find the user by email
+    const user = await admin.findOne({ email });
+
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
+    // Update the user's isApproved field to true
+    await admin.findByIdAndUpdate(user._id, { isApproved: true });
+
+    // Send an email to notify the user they are approved
+    const approvalMailOptions = {
+      to: user.email,
+      subject: "User Approved",
+      text: "Your request for login has been approved. You can now log in.",
+    };
+    await sendEmail(approvalMailOptions);
+
+    res.status(200).send({
+      success: true,
+      message: "User approved successfully.",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      success: false,
+      message: "Error approving user",
+      error,
+    });
+  }
+};
+
 
 //POST LOGIN
 export const loginController = async (req, res) => {
@@ -94,12 +136,28 @@ export const loginController = async (req, res) => {
       });
     }
 
-    //me
     // Check if the email is verified
     if (!user.isVerified) {
       return res.status(200).send({
         success: false,
         message: "Email is not verified. Please check your email for verification instructions.",
+      });
+    }
+
+    if(!user.isApproved){
+
+      const requestEmail  =  process.env.SUPER_ADMIN_EMAIL;
+      const requestMessage = `User with email ${email} is requesting approval to login.`;
+      const mailOptions = {
+        to: requestEmail,
+        subject: "Login Request Approval",
+        text: requestMessage,
+      };
+      await sendEmail(mailOptions);
+
+      return res.status(200).send({
+        success: false,
+        message: "User is not approved. Please wait for approval from the super admin.",
       });
     }
 

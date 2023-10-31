@@ -18,7 +18,7 @@ router.post("/register", registerController);
 
 //LOGIN || METHOD POST
 router.post("/login", loginController);
-router.put('/approve/:email', approveUserController);
+router.put('/approve/:token', approveUserController);
 
 //Forgot Password|| METHOD POST
 router.post("/forgot-Password", forgotPasswordController);
